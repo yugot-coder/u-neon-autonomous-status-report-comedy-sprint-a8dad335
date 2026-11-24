@@ -15,6 +15,20 @@ OUT_PATH = "/output/entry.txt"
 
 
 def main() -> int:
+    # Pre-write validation: fail before touching the output file if LINE
+    # itself is not a valid entry -- a single line (no newline characters),
+    # 1..MAX_CHARS characters long, and not only whitespace. This guards
+    # against a bad edit to LINE being written out and only caught later.
+    if "\n" in LINE or "\r" in LINE:
+        print("ERROR: LINE is not a single line", file=sys.stderr)
+        return 1
+    if not (1 <= len(LINE) <= MAX_CHARS):
+        print(f"ERROR: LINE length {len(LINE)} outside 1..{MAX_CHARS}", file=sys.stderr)
+        return 1
+    if not LINE.strip():
+        print("ERROR: LINE is only whitespace", file=sys.stderr)
+        return 1
+
     os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True)
     # Write the single line with no trailing newline: the file is exactly
     # the line, so its character count is the line's character count.
